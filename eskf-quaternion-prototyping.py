@@ -36,18 +36,35 @@ def propogate_nominal_state(q, wb, wm, wn):
     return X_dot
 
 """Error State Methods"""
-#READER DONT WORRY ABOUT THIS (this is just to read my thoughts)
-#u = wm - wb
-#
+#READER, DONT WORRY ABOUT THIS (this is just to organize my thoughts)
+#u = W_measured - W_bias -> u is a matrix with wx, wy, wz (I need to flatten this later in skew symmetric)
+#skew_symmetric_matrix(input)
 
-def skew_symmetric(v):
+def skew_symmetric(phi):
+    vx, vy, vz = phi.flatten()
+    phi_skew = np.array([[0, -vz, vy],
+                         [vz, 0, -vx],
+                         [-vy, vx, 0]])
+    return phi_skew
 
+def compute_rotation_matrix(phi):
+    phi_skew = skew_symmetric(phi)
+    I = np.eye(3)
+    R = I + (math.sin(theta)/theta)*phi_skew  + (1-math.cos(theta))/(theta**2)*(phi_skew**2)
+    return R.T
 
-
-
-
-
-
+def propogate_error_state(wm, wn, am, an, dt):
+    Ua = am - an
+    Uw = wm - wn
+    Uk = np.vstack((Ua, Uw))
+    phi = Uk * dt
+    R_t = compute_rotation_matrix(phi)
+    I = np.eye(3)
+    zero = np.zeros((3,3))
+    Fk = np.array([[R_t, -dt*I],
+                   [zero, I]])
+    
+    
 
 
 if __name__ == "__main__":
@@ -56,20 +73,44 @@ if __name__ == "__main__":
     while count in range(len(df)-1):
         count = 1
 
-        #INITIALIZAITION OF VARIABLES
+        """INITIALIZAITION OF VARIABLES"""
+        #angular velocities
         wx = df['GyroX(rad/s)'][count]
         wy = df['GyroY(rad/s)'][count]
         wz = df['GyroZ(rad/s)'][count]
-        bx = np.zeros((3,1))
-        by = np.zeros((3,1))
-        bz = np.zeros((3,1))
-        nx = np.zeros((3,1))
-        ny = np.zeros((3,1))
-        nz = np.zeros((3,1))
+        wbx = np.zeros((3,1))
+        wby = np.zeros((3,1))
+        wbz = np.zeros((3,1))
+        wnx = np.zeros((3,1))
+        wny = np.zeros((3,1))
+        wnz = np.zeros((3,1))
 
+        #accelerations
+        ax = df['AccX(m/s^2)'][count]
+        ay = df['AccY(m/s^2)'][count]
+        az = df['AccZ(m/s^2)'][count]
+        abx = np.zeros((3,1))
+        aby = np.zeros((3,1))
+        abz = np.zeros((3,1))
+        anx = np.zeros((3,1))
+        an_y = np.zeros((3,1))
+        anz = np.zeros((3,1))
 
         wm = np.array([[wx], [wy], [wz]]) #measured angular velocity
-        wb = np.array([[bx], [by], [bz]]) #bias for angular velocity
-        wn = np.array([[nx], [ny], [nz]]) #noise for angular velocity
+        wb = np.array([[wbx], [wby], [wbz]]) #bias for angular velocity
+        wn = np.array([[wnx], [wny], [wnz]]) #noise for angular velocity
+
+        am = np.array([[ax], [ay], [az]]) #measured acceleration
+        ab = np.array([[abx], [aby], [abz]]) #bias for acceleration
+        an = np.array([[anx], [an_y], [anz]]) #bias for acceleration
 
         X_dot = propogate_nominal_state(q, wb, wm, wn)
+
+##########################################################################################
+        #Ua = am - an
+        #Uw = wm - wn
+        #Uk = np.vstack((Ua, Uw))
+        #phi = Uk * dt
+
+        #Now i need
+        delta_Xk = propogate_error_state(wm, wn, am, an, dt)
