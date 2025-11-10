@@ -2,9 +2,21 @@
 import math
 import numpy as np
 import pandas as pd
-df = pd.read_csv('IMU_data.csv')  # Assuming a CSV file with sensor data
+df = pd.read_csv('IMU_data.csv')
 
 """Nominal State Methods"""
+
+def propogate_nominal_state():
+    p = update_position(p, v, a, dt)
+    v = update_velocity()
+    q = update_orientation()
+    ab = update_accel_bias()
+    wb = update_gyro_bias()
+    g = update_gravity()
+
+    xt_dot = np.vstack((p, v, q, ab, wb, g))
+    return xt_dot
+
 def omega_matrix(omega):
     wx, wy, wz = omega.flatten()
     Omega = np.block([[0, -wx, -wy, -wz],
@@ -28,12 +40,28 @@ def update_bias():
 def bias_derivative(process_noise):
     return process_noise
 
-def propogate_nominal_state(q, wb, wm, wn):
-    process_noise = update_bias()
+#i need xt= [pt, vt, qt, abt, wbt, gt]
+def update_position(p, v, a, dt):
+    p_next = p + v*dt + 0.5*a*(dt**2)
+    return p_next
+
+def update_velocity(v, a, dt):
+    v_next = v + a*dt
+    return v_next
+
+def update_orientation(q, wb, wm, wn, dt):
     q_dot = quaternion_derivative(q, wm - wb - wn)
-    wb_dot = bias_derivative(process_noise)
-    X_dot = np.vstack((q_dot, wb_dot))
-    return X_dot
+    q_next = q + q_dot*dt
+    #quaternion values should add up to 1 below
+    q_next = q_next / np.linalg.norm(q_next)
+    return q_next
+
+def update_accel_bias(ab, ):
+    ab_next = ab + #look into this later
+
+def update_gyro_bias(wb, dt):
+    wb_next = wb + bias_derivative(update_bias()) * dt
+    return wb_next 
 
 """Error State Methods"""
 #(this is just to organize my thoughts)
@@ -67,36 +95,36 @@ def propogate_error_state(wm, wn, am, an, dt):
 
 ################################################################################################
 """Redoing propogating normal states"""
-
+"""commented it out for now but if i fuck up the code up top im just gonna reuse this"""
 #i need xt= [pt, vt, qt, abt, wbt, gt]
-def update_position(p, v, a, dt):
-    p_next = p + vk*dt + 0.5*ak*(dt**2)
-    return p_next
+#def update_position(p, v, a, dt):
+#   p_next = p + vk*dt + 0.5*ak*(dt**2)
+#    return p_next
 
-def update_velocity(v, a, dt):
-    v_next = vk + ak*dt
-    return v_next
+#def update_velocity(v, a, dt):
+#    v_next = vk + ak*dt
+#    return v_next
 
-def update_orientation(q, wb, wm, wn, dt):
-    q_dot = quaternion_derivative(q, wm - wb - wn)
-    q_next = q + q_dot*dt
-    #quaternion values should add up to 1 below
-    q_next = q_next / np.linalg.norm(q_next)
-    return q_next
+#def update_orientation(q, wb, wm, wn, dt):
+#    q_dot = quaternion_derivative(q, wm - wb - wn)
+#    q_next = q + q_dot*dt
+#    #quaternion values should add up to 1 below
+#    q_next = q_next / np.linalg.norm(q_next)
+#    return q_next
 
-def update_accel_bias(ab, ):
-    ab_next = ab + 
+#def update_accel_bias(ab, ):
+#    ab_next = ab + 
 
-def propogate_nominal_state():
-    p = update_position()
-    v = update_velocity()
-    q = update_orientation()
-    ab = update_accel_bias()
-    wb = update_gyro_bias()
-    g = update_gravity()
+#def propogate_nominal_state():
+#    p = update_position()
+#    v = update_velocity()
+#    q = update_orientation()
+#    ab = update_accel_bias()
+#    wb = update_gyro_bias()
+#    g = update_gravity()
 
-    xt_dot = np.vstack((p, v, q, ab, wb, g))
-    return xt_dot
+#    xt_dot = np.vstack((p, v, q, ab, wb, g))
+#    return xt_dot
 
 
 if __name__ == "__main__":
@@ -146,4 +174,4 @@ if __name__ == "__main__":
 
         #Now i need [[delta_theta_k], [delta_wb_k]]
         # delta_theta = 
-        delta_Xk = propogate_error_state(wm, wn, am, an, dt)
+        delta_Xk = propogate_error_state(wm, wn, am, an, dt) """TODO"""
