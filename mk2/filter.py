@@ -107,7 +107,7 @@ def prediction_step(x, P, U, w, dt):
                     [Z3, Z3, Z3, Z3, I,      Z3],
                     [Z3, Z3, Z3, Z3, Z3,      I]])
 
-    #PREDICTION STEP COVARIANCE UPDATE
+    #Error covariance update equation
     P = F_x @ P @ F_x.T + F_i @ Q_i @ F_i.T
 
     #LFG
