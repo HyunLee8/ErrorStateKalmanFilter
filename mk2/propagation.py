@@ -36,7 +36,16 @@ wb = gyroscope bias
 gt = gravity vector
 """
 def propagate_nominal_state(p, v, q, ab, wb, g):
-    return [p, v, q, ab, wb, g]
+    # Ensure all inputs are column vectors
+    p = np.array(p).reshape(3,1)
+    v = np.array(v).reshape(3,1)
+    q = np.array(q).reshape(4,1)
+    ab = np.array(ab).reshape(3,1)
+    wb = np.array(wb).reshape(3,1)
+    g = np.array(g).reshape(3,1)
+
+    # Stack into single nominal state vector
+    return np.vstack((p, v, q, ab, wb, g))  # shape (19,1)
     
 
 
@@ -49,10 +58,24 @@ mag_x, mag_y, mag_z = magnetometer measurements
 roll, pitch, yaw = euler angles from IMU
 """
 def imu_inputs(am, wm, mag_m, euler_angles):
-    return [am, wm, mag_m, euler_angles]
+    # Ensure column vectors
+    am = np.array(am).reshape(3,1)
+    wm = np.array(wm).reshape(3,1)
+    mag_m = np.array(mag_m).reshape(3,1)
+    euler_angles = np.array(euler_angles).reshape(3,1)
+
+    return np.vstack((am, wm, mag_m, euler_angles))  # shape (12,1)
 
 def get_u_corrected(am, wm, ab, wb):
-    return np.array([[am - ab], [wm - wb]])
+    am = np.array(am).reshape(3,1)
+    wm = np.array(wm).reshape(3,1)
+    ab = np.array(ab).reshape(3,1)
+    wb = np.array(wb).reshape(3,1)
+
+    a_corrected = am - ab
+    w_corrected = wm - wb
+
+    return np.vstack((a_corrected, w_corrected))  # shape (6,1)
 
 
 """
@@ -60,4 +83,7 @@ NOISE VECTOR
 sigma
 """
 def get_sigmas(sigma_a_noise, sigma_w_noise, sigma_a_walk, sigma_w_walk):
-    return [np.array([[sigma_a_noise], [sigma_w_noise], [sigma_a_walk], [sigma_w_walk]])]
+    return np.array([[sigma_a_noise],
+                     [sigma_w_noise],
+                     [sigma_a_walk],
+                     [sigma_w_walk]])  # shape (4,1)

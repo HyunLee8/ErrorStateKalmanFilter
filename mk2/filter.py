@@ -12,14 +12,15 @@ update step of the ESKF filter.
 """
 
 def skew_symmetric(v):
-    vx, vy, vz = v
+    vx, vy, vz = v.flatten()
     return np.array([[0, -vz, vy],
                      [vz, 0, -vx],
                      [-vy, vx, 0]])
 
 def q_skew_symmetric(q):
-    qw, qx, qy, qz = q
+    qw, qx, qy, qz = q.flatten()
     return np.array([
+        [-qx, -qy, -qz],
         [qw, -qz, qy],
         [qz, qw, -qx],
         [-qy, qx, qw]
@@ -46,7 +47,7 @@ def predict(x, P, U, w, dt):
     w: [sigma_a_noise, sigma_w_noise, sigma_a_walk, sigma_w_walk] process noise vector
     dt: time step
     """
-    #gets the quaternion Orientation from the state vector q
+    #gets the quaternion Orientation from the state vector q  
     orientation = Quaternion(array=x[6:10])
     #creates a matrix so that I can rotate the acceleration from body to global frame
     R = orientation.rotation_matrix
@@ -69,7 +70,7 @@ def predict(x, P, U, w, dt):
 
     x[3:6] = v_next
 
-    x[6:10] = q_next.elements
+    x[6:10] = q_next.elements.reshape(4,1)
 
     #I is the identity matrix
     I = np.eye(3)
@@ -78,7 +79,7 @@ def predict(x, P, U, w, dt):
     Z3 = np.zeros((3,3))
 
     #JACOBIAN MATRIX for noise
-    F_i = np.array([[Z3, Z3, Z3, Z3],
+    F_i = np.block([[Z3, Z3, Z3, Z3],
                     [I, Z3, Z3,  Z3],
                     [Z3, I, Z3,  Z3],
                     [Z3, Z3, I,  Z3],
@@ -102,9 +103,7 @@ def predict(x, P, U, w, dt):
     rsw = R.T @ skew_symmetric(U[3:6] - x[13:16]) * dt
 
     #JACOBIAN MATRIX for how state evolves determinstically
-    F_x = np.zeroes((19,19))
-    F_x[0] = I
-    F_x = np.array([[I, I*dt, Z3, Z3, Z3,    Z3],
+    F_x = np.block([[I, I*dt, Z3, Z3, Z3,    Z3],
                     [Z3, I,  rsa, -R*dt, Z3,  I*dt],
                     [Z3, Z3, rsw, Z3, -I*dt, Z3],
                     [Z3, Z3, Z3, I, Z3,      Z3],
@@ -128,39 +127,35 @@ def update(imu_data, x, P, V, dt, altimeter_data, gps_data,
     dt: time step
     """
     #these are the measurements from the IMU, gps, and altimeter
-    y_a = (imu_data[0:3]).reshape(3)
-    y_m = (imu_data[6:9]).reshape(3)
-    y_z = np.asarray(altimeter_data) if altimeter_data is not None else None
-    y_p = np.asarray(gps_data) if gps_data is not None else None
+    # Column vector version
+    y_a = imu_data[0:3].reshape(-1,1)        # (3,1)
+    y_m = imu_data[6:9].reshape(-1,1)        # (3,1)
+    y_z = np.array([altimeter_data]).reshape(1,1) if altimeter_data is not None else None
+    y_p = np.array(gps_data).reshape(-1,1) if gps_data is not None else None
 
-    #magnetic field in global frame
-    #gravity vector from state
-    b = np.array([1, 0, 0])
-    g = x[16:19]
+    b = np.array([1, 0, 0]).reshape(-1,1)    # magnetic field column
+    g = x[16:19].reshape(-1,1)               # gravity column
 
-    #gets the quaternion Orientation from the state vector q
     orientation = Quaternion(array=x[6:10])
     R = orientation.rotation_matrix
 
-    #creates a matrix for predictions and sensor_data either with or without GPS
+    # Prediction vectors
+    y_a_pred = (R.T @ g).reshape(-1,1)
+    y_m_pred = (R.T @ b).reshape(-1,1)
+    y_z_pred = np.array([x[2]]).reshape(1,1)
+
     if use_pos and (y_p is not None):
-        #prediction equations with position measurements
-        y_a_pred = R.T @ g
-        y_m_pred = R.T @ b
-        y_z_pred = x[2]
-        y_p_pred = x[0:2]
-        y_pred = np.hstack((y_a_pred, y_m_pred, y_z_pred, y_p_pred))
-        y = np.hstack((y_a, y_m, y_z, y_p))
+        y_p_pred = x[0:2].reshape(-1,1)
+        y_pred = np.vstack((y_a_pred, y_m_pred, y_z_pred, y_p_pred))  # (9,1)
+        y = np.vstack((y_a, y_m, y_z, y_p))                            # (9,1)
         dim = 9
         pos_mode = True
     else:
-        y_a_pred = R.T @ g
-        y_m_pred = R.T @ b
-        y_z_pred = x[2]
-        y_pred = np.hstack((y_a_pred, y_m_pred, y_z_pred))
-        y = np.hstack((y_a, y_m, y_z))
+        y_pred = np.vstack((y_a_pred, y_m_pred, y_z_pred))             # (7,1)
+        y = np.vstack((y_a, y_m, y_z))                                  # (7,1)
         dim = 7
         pos_mode = False
+
 
     # Create effective V matrix by inflating noise for disabled measurements
     # This is more theoretically correct than setting y_pred = y
@@ -199,7 +194,7 @@ def update(imu_data, x, P, V, dt, altimeter_data, gps_data,
     else:
         H_x[6, 2] = 1.0  # sets the jacobian for altimeter z np.eye(1) = 1 
 
-    Q_x = 0.5 * np.vstack(( -q[1:], q_skew_symmetric(q))) # adds a stack to the top because its a 4x3 matrix hence -q[]
+    Q_x = 0.5 * np.vstack((q_skew_symmetric(q))) # adds a stack to the top because its a 4x3 matrix hence -q[]
 
     #Jacobian true state with respect to error state
     X_x = np.zeros((16, 15))
