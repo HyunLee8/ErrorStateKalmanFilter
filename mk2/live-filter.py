@@ -112,13 +112,12 @@ def main():
         print(f'Updated orientation at time t={total_time} :', x[6:10].flatten())
 
         # Append to logs
-        #logs.append([total_time] + x[6:10].tolist())
+        logs.append([total_time] + x[6:10].tolist())
 
         i += 1
-
-        # Optional: break loop at end of data
-        #if i >= len(imu_data) - 1:
-        #   break
+        
+        if i >= len(imu_data) - 1:
+           break
 
     # Convert logs to DataFrame and save CSV
     #df_logs = pd.DataFrame(logs, columns=['time_ms', 'q0', 'q1', 'q2', 'q3'])
