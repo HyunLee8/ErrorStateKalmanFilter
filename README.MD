@@ -1,10 +1,10 @@
 # Extended Error State Kalman Filter w/ Quaternions
 
-Orientation vs. Time
+## Orientation vs. Time
 
 ![image alt](https://github.com/HyunLee8/Quaternion-Filter/blob/main/docs/orientation_time.png?raw=true)
 
-Euler vs. Time
+## Euler vs. Time
 
 ![image alt](https://github.com/HyunLee8/Quaternion-Filter/blob/main/docs/euler_time.png?raw=true)
 
