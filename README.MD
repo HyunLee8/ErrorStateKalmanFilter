@@ -4,9 +4,13 @@ A Python implementation of an Error-State Kalman Filter for fusing IMU (Inertial
 
 ## Tests
 
-![image alt](https://github.com/HyunLee8/Error-State-Kalman-Filter/blob/main/results/Screenshot%202026-01-02%20at%202.55.49%E2%80%AFPM.png)
-![image alt](https://github.com/HyunLee8/Error-State-Kalman-Filter/blob/main/results/Screenshot%202026-01-02%20at%202.55.49%E2%80%AFPM.png)
-![image alt](https://github.com/HyunLee8/Error-State-Kalman-Filter/blob/main/results/Screenshot%202026-01-02%20at%202.56.18%E2%80%AFPM.png?raw=true)
+<table>
+  <tr>
+    <td width="33%"><img src="https://github.com/HyunLee8/Error-State-Kalman-Filter/blob/main/results/Screenshot%202026-01-02%20at%202.56.02%E2%80%AFPM.png?raw=true" width="100%" /></td>
+    <td width="33%"><img src="https://github.com/HyunLee8/Error-State-Kalman-Filter/blob/main/results/Screenshot%202026-01-02%20at%202.55.49%E2%80%AFPM.png?raw=true" width="100%" /></td>
+    <td width="33%"><img src="https://github.com/HyunLee8/Error-State-Kalman-Filter/blob/main/results/Screenshot%202026-01-02%20at%202.56.18%E2%80%AFPM.png?raw=true" width="100%" /></td>
+  </tr>
+</table>
 
 ## Overview
 
