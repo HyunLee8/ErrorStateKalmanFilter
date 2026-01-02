@@ -2,6 +2,12 @@
 
 A Python implementation of an Error-State Kalman Filter for fusing IMU (Inertial Measurement Unit) data with position/velocity measurements to estimate 3D orientation, velocity, position, and sensor biases.
 
+## Tests
+
+![image alt](https://github.com/HyunLee8/Error-State-Kalman-Filter/blob/main/results/Screenshot%202026-01-02%20at%202.55.49%E2%80%AFPM.png)
+![image alt](https://github.com/HyunLee8/Error-State-Kalman-Filter/blob/main/results/Screenshot%202026-01-02%20at%202.55.49%E2%80%AFPM.png)
+![image alt](https://github.com/HyunLee8/Error-State-Kalman-Filter/blob/main/results/Screenshot%202026-01-02%20at%202.56.18%E2%80%AFPM.png?raw=true)
+
 ## Overview
 
 This ESKF implementation uses quaternion representation for robust orientation estimation, avoiding gimbal lock issues associated with Euler angles. The filter predicts state using gyroscope and accelerometer data, then corrects the estimates using position or velocity measurements.
