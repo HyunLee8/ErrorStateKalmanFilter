@@ -7,6 +7,7 @@ import pandas as pd
 import time
 import os
 
+#I needed this because my mac was being wierd but you may not need this
 HERE = os.path.dirname(os.path.abspath(__file__))
 CSV_SENSOR_PATH = os.path.join(HERE, 'sensor_data.csv')
 CSV_MOTION_PATH = os.path.join(HERE, 'motion_data.csv')
@@ -31,7 +32,7 @@ class Data:
         self.GyroYCol = 5
         self.GyroZCol = 6
 
-        #Motion_data
+        #Motion_data 
         self.PosX = 0
         self.PosY = 1
         self.PosZ = 2
@@ -72,9 +73,8 @@ class Data:
 
 class ESKF:
     def __init__(self, 
-                data_obj,  #Data class will be instantiated in RunFilter and passed here
+                data_obj,  #Data class will be instantiated in RunFilter.py and passed here
 
-                """Change these values via adjustment -- You can compare to ground truth data"""
                 #################################################
                 sig_a_noise=0.1,   #ACCELERATION NOISE PARAMTER #
                 sig_a_walk=0.1,    #ACCELERATION WALK PARAMETER #
@@ -87,7 +87,7 @@ class ESKF:
         self.data_obj = data_obj
         self.X = np.zeros(16)
         self.X[3] = 1                   #Scalar variable in quaternion default is 1
-        self.error_state = np.zeros(15) #1 less than the State because it uses Euler instead of quaternions
+        self.error_state = np.zeros(15) #1 less than the State because it uses Euler errors instead of quaternions
         self.P = np.eye(15)             #Error Covariance
         self.Qi = np.diag([
             sig_a_noise**2, sig_a_noise**2, sig_a_noise**2, 
@@ -109,7 +109,7 @@ class ESKF:
                         [vz, 0, -vx],
                         [-vy, vx, 0]])
 
-    def q_skew_symmetric(self, q):        #This isn't actually a skew symmetric. Just caling it a q_ss because it looks like one
+    def q_skew_symmetric(self, q):        #This isn't actually a skew symmetric. Just caling it a q_s_s because it looks like one
         qw, qx, qy, qz = q.flatten()
         return np.array([
             [-qx, -qy, -qz],
@@ -153,10 +153,10 @@ class ESKF:
 
                     All values of the State variables start at either 0 or any default value.
                     As the motion of the sensor data changes through time -> gryo and acc, we can
-                    estmate true acceleration by subtracting measured acc and measured w from a bias 
-                    and w bias. Getting true acc helps attain global acceleration with respect to the world.
+                    estmate true acceleration by subtracting measured acc and measured gyro from acc bias 
+                    and gyro bias. Getting true acc helps attain global acceleration with respect to the world.
                     Now perform a matrix multiplication of a rotated orientation matrix minus the gravity 
-                    since it is with respect to the world. With true acc you can now use the fundamental kinematic
+                    since it is wrt Earth. With true acc you can now use the fundamental kinematic
                     formulas to get a predicted velocity and position. Now in order to predict orientation, take 
                     gyro, multiply by time step to get delta_theta and transform those euler values into quaternions
                     to get change in quaternions. Now we have delta_q and multiply it by the current quaternions.
@@ -206,7 +206,10 @@ class ESKF:
         Fx = self.compute_error_state_jacobian(self.dt, a_unbiased, w_unbiased, self.R)
         Fi = self.compute_noise_jacobian(self.dt, self.R)
 
+        #corvariance of error
         self.P = Fx @ self.P @ Fx.T + Fi @ self.Qi @ Fi.T
+
+        #always reset error states
         self.error_state = np.zeros(15)
 
         self.iteration = self.iteration + 1
@@ -219,7 +222,7 @@ class ESKF:
                     Whether it is GPS, SLAM, or altimeter data, in order to incorporate an update step it needs 
                     some sort of global stabalizer. If you were to use a drone you might use images and process
                     it through ORB at a lower frequency as a global stabalizer. In this ESKF we will use GPS data
-                    to work with. Remeber that guassian cloud I was reffering to earlier? Well how we use that 
+                    to work with. Remeber that guassian cloud I was reffering from earlier? Well how we use that 
                     in the update step is by getting that 'prediction cloud' (from earlier) comparing it against 
                     sensor data H that has it's own cloud, combine the two clouds by multiplying each point in the
                     guassian and producing a new gaussian. That is Kalman gain. You would now update the predicted 
@@ -234,9 +237,10 @@ class ESKF:
                     setting the variables is straight forward with the exception of quaternions. You have to convert
                     euler error values into quaternions but luckily pyquaternion exists and saves a shit ton of time.
                     Now just multiply the error quaternions to the current quaternions and then just normlise it so
-                    all values add to 1. Boom you just made the error state kalman filter.
+                    all values add to 1. Now just run it with each row in a data set and boom you now have a fully
+                    function Error State Kalman Filter
         """
-        
+
         self.measurement = np.asarray(self.measurement).flatten()
         meas_size = len(self.measurement)
 
@@ -303,6 +307,7 @@ class ESKF:
         # Reset error state to zero
         self.error_state = np.zeros(15)
 
+        """Uncomment to get the csv"""
         #self.results.append({
         #    'time': time.time(),
         #    'qw': self.X[3],
@@ -314,6 +319,7 @@ class ESKF:
 
         print(f"Time: {time.time():.6f} | Quaternion: [{self.X[3]:.6f}, {self.X[4]:.6f}, {self.X[5]:.6f}, {self.X[6]:.6f}]")
     
+    """Uncomment to get the csv"""
     #def save_results(self, filename='quaternion_results.csv'):
     #    """Save results to CSV"""
     #    import pandas as pd

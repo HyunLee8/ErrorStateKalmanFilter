@@ -17,7 +17,7 @@ Everything here has been updated from the previous garbage code that I had for s
 
 ## Overview
 
-This ESKF implementation uses quaternion representation for robust orientation estimation, avoiding gimbal lock issues associated with Euler angles. The filter predicts state using gyroscope and accelerometer data, then corrects the estimates using position or velocity measurements.
+This ESKF implementation uses quaternion representation for orientation estimation, avoiding gimbal lock issues associated with Euler angles. The filter predicts state using gyroscope and accelerometer data, then corrects the estimates using GPS data. Intuitive explanation is in filter.py comments.
 
 **State Vector (16 elements):**
 - Position (3D): `[x, y, z]`
@@ -55,8 +55,7 @@ cd ErrorStateKalmanFilter
 
 2. Install required dependencies:
 ```bash
-pip install numpy pandas pyquaternion matplotlib
-```
+pip install numpy pandas pyquaternion
 
 ### Running the Filter
 
