@@ -1,14 +1,17 @@
-# Error-State Kalman Filter (ESKF) with Quaternion-Based Orientation
+# Error-State Kalman Filter (ESKF) with Quaternion-Based Orientation (updated)
 
-A Python implementation of an Error-State Kalman Filter for fusing IMU (Inertial Measurement Unit) data with position/velocity measurements to estimate 3D orientation, velocity, position, and sensor biases.
+Everything here has been updated from the previous garbage code that I had for several months and never updated. So here is the final python implementation. I'll soon try to transform this into cpp but that'll be later. So enjoy the work done so far.
 
-## Tests
+## Data
 
 <table>
   <tr>
-    <td width="33%"><img src="https://github.com/HyunLee8/Error-State-Kalman-Filter/blob/main/results/Screenshot%202026-01-02%20at%202.56.02%E2%80%AFPM.png?raw=true" width="100%" /></td>
-    <td width="33%"><img src="https://github.com/HyunLee8/Error-State-Kalman-Filter/blob/main/results/Screenshot%202026-01-02%20at%202.55.49%E2%80%AFPM.png?raw=true" width="100%" /></td>
-    <td width="33%"><img src="https://github.com/HyunLee8/Error-State-Kalman-Filter/blob/main/results/Screenshot%202026-01-02%20at%202.56.18%E2%80%AFPM.png?raw=true" width="100%" /></td>
+    <td width="50%"><img src="https://github.com/HyunLee8/ErrorStateKalmanFilter/blob/c3cf1b0c57cff196f236105c246aefd366c0b9c2/results/orientation_animation.gif?raw=true" width="100%" /></td>
+    <td width="50%"><img src="https://github.com/HyunLee8/Error-State-Kalman-Filter/blob/main/results/Screenshot%202026-01-02%20at%202.55.49%E2%80%AFPM.png?raw=true" width="100%" /></td>
+  </tr>
+  <tr>
+    <td width="50%"><img src="https://github.com/HyunLee8/Error-State-Kalman-Filter/blob/main/results/Screenshot%202026-01-02%20at%202.56.02%E2%80%AFPM.png?raw=true" width="100%" /></td>
+    <td width="50%"><img src="https://github.com/HyunLee8/Error-State-Kalman-Filter/blob/main/results/Screenshot%202026-01-02%20at%202.56.18%E2%80%AFPM.png?raw=true" width="100%" /></td>
   </tr>
 </table>
 
@@ -32,7 +35,8 @@ This ESKF implementation uses quaternion representation for robust orientation e
 
 ## Theoretical Background
 
-This implementation is based on the following resources:
+This project could not have been done without these resources (The first link is absolutely goated on general KF). The second link is for implementation. Also check out chapter 6 for implementing update step. ThreeBlueOneBrown does an absolutely amazing explanation on quaternions 
+visualzed and somehow gives us 3d people a somewhat grasp of a 4d concept.
 
 1. **Basic Kalman Filter Intuition**: [How a Kalman Filter Works (in Pictures)](https://www.bzarg.com/p/how-a-kalman-filter-works-in-pictures/)
 2. **ESKF with Quaternions** (Sections 5.1-5.4.3): [Quaternion kinematics for the error-state Kalman filter](https://arxiv.org/pdf/1711.02508)
@@ -45,7 +49,7 @@ This implementation is based on the following resources:
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/ErrorStateKalmanFilter.git
+git clone https://github.com/hyunlee8/ErrorStateKalmanFilter.git
 cd ErrorStateKalmanFilter
 ```
 
@@ -74,7 +78,7 @@ python main.py
 
 ## Algorithm Details
 
-### Prediction Step
+### Prediction Step ~~ explained better in src/filter/filter.py
 
 1. **Remove biases** from IMU measurements
 2. **Transform acceleration** to global frame using current orientation
@@ -82,7 +86,7 @@ python main.py
 4. **Update orientation** via quaternion multiplication
 5. **Propagate covariance** using linearized error-state dynamics
 
-### Update Step
+### Update Step ~~ explained better in src/filter/filter.py
 
 1. **Compute innovation** (measurement - prediction)
 2. **Calculate Kalman gain** using current covariance and measurement noise
