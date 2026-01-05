@@ -236,13 +236,13 @@ class ESKF:
         # Reset error state to zero
         self.error_state = np.zeros(15)
 
-        self.results.append({
-            'time': time.time(),
-            'qw': self.X[3],
-            'qx': self.X[4],
-            'qy': self.X[5],
-            'qz': self.X[6]
-        })
+        #self.results.append({
+        #    'time': time.time(),
+        #    'qw': self.X[3],
+        #    'qx': self.X[4],
+        #    'qy': self.X[5],
+        #    'qz': self.X[6]
+        #})
         
 
         print(f"Time: {time.time():.6f} | Quaternion: [{self.X[3]:.6f}, {self.X[4]:.6f}, {self.X[5]:.6f}, {self.X[6]:.6f}]")
