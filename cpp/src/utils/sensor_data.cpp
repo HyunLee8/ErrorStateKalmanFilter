@@ -1,20 +1,28 @@
 #include "eskf/utils/sensor_data.h"
 
-SensorData::SensorData(int time, int accx, int accy, int accz, int gyrox, int gyroy, int gyroz)
-    : Time(time), Accx(accx), AccY(accy), AccZ(accz), GyroX(gyrox), GyroY(gyroy), GyroZ(gyroz) {} //cpp initalizes like this. You can also do assignments but apparently this is normal.
+SensorData::SensorData(const std::vector<std::vector<double>>& data)
+    : sensorData(data){}
 
-void SensorData::getSensorData(int i, double& Time, Eigen::Vector3d& Acc, Eigen::Vector3d& Gyro) {
-    Time << sensorData[i][Time];
+void SensorData::getSensorData(int i) {
+    Time = sensorData[i][TIME_COL];
 
-    Acc << sensorData[i][AccX],
-           sensorData[i][AccY],
-           sensorData[i][AccZ];
+    Acc << sensorData[i][ACC_X_COL],
+           sensorData[i][ACC_Y_COL],
+           sensorData[i][ACC_Z_COL];
 
-    Gyro << sensorData[i][GyroX],
-            sensorData[i][GyroY],
-            sensorData[i][GyroZ]; 
+    Gyro << sensorData[i][GYRO_X_COL],
+            sensorData[i][GYRO_Y_COL],
+            sensorData[i][GYRO_Z_COL]; 
 }
 
-void MotionData::loadData(const std::vector<std::vector<std::string>>& data) {
-    sensorData = data;
+SensorData::double getTime() {
+    return Time;
+}
+
+SensorData::Eigen::Matrix getAcc() {
+    return Acc;
+}
+
+SensorData::Eigen::Matrix getGyro() {
+    return Gryo;
 }

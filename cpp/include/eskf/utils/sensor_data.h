@@ -7,17 +7,27 @@
 
 class SensorData {
 private:
-    std::vector<std::vector<std::double>> sensorData;
-    int Time;
-    int AccX, AccY, AccZ;
-    int GyroX, GyroY, GyroZ;
+    std::vector<std::vector<double>> sensorData;
+    Eigen::Matrix<double, 3, 1> Acc;
+    Eigen::Matrix<double, 3, 1> Gyro;
+    double Time;
+
+    static constexpr int TIME_COL = 0;
+    static constexpr int ACC_X_COL = 1;
+    static constexpr int ACC_Y_COL = 2;
+    static constexpr int ACC_Z_COL = 3;
+    static constexpr int GYRO_X_COL = 4;
+    static constexpr int GYRO_Y_COL = 5;
+    static constexpr int GYRO_Z_COL = 6;
 
 public:
-    SensorData(int time, int accx, int accy, int accz, int gyrox, int gyroy, int gyroz);
-    
-    void getSensorVectors(int i, double& Time, Eigen::Vector3d& Acc, Eigen::Vector3d& Gyro);
+    SensorData(const std::vector<std::vector<std::double>>& data);
 
-    void loadData(const std::vector<std::vector<std::double>>& data);
-}
+    double getTime();
+
+    Eigen::Matrix<double, 3, 1> getAcc();
+
+    Eigen::Matrix<double, 3, 1> getGyro();
+};
 
 #endif

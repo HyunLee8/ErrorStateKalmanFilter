@@ -27,10 +27,10 @@ public:
     Data();
 
     double getTime();
-    double getAcc();
-    double getGyro();
-    double getPos();
-    double getVel();
+    Eigen::Matrix<double, 3, 1> getAcc();
+    Eigen::Matrix<double, 3, 1> getGyro();
+    Eigen::Matrix<double, 3, 1> getPos();
+    Eigen::Matrix<double, 3, 1> getVel();
     std::vector<std::vector<std::double>> get_sensor_data();
     std::vector<std::vector<std::double>> get_motion_data();
 }

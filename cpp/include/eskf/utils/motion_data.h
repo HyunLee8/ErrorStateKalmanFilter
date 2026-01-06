@@ -8,11 +8,18 @@
 class MotionData {
 private:
     std::vector<std::vector<std::double>> motionData;
-    int PosX, PosY, PosZ;
-    int velX, VelY, VelZ;
+    Eigen::Matrix<double, 3, 1> Pos;
+    Eigen::Matrix<double, 3, 1> Vel;
+
+    static constexpr int POS_X_COL = 0;
+    static constexpr int POS_Y_COL = 1;
+    static constexpr int POS_Z_COL = 2;
+    static constexpr int VEL_X_COL = 3;
+    static constexpr int VEL_Y_COL = 4;
+    static constexpr int VEL_Z_COL = 5;
 
 public:
-    MotionData(int posx, int posy, int posz, int velx, int vely, int velz);
+    MotionData(const std::vector<std::vector<double>>& data);
 
     void getMotionData(int i, Eigen::Vector& Pos, Eigen::Vector& Vel);
 
