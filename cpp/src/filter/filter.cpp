@@ -1,5 +1,7 @@
 #include <filter.h>
 #include <data.h>
+#include <Eigen/Dense>
+#include <vector>
 
 class Data {
     private:
@@ -19,5 +21,6 @@ class Data {
         VelZCol = 5;
     
         sensor_data = readCSV('sensor_data.csv');
-        motion_data = readCSV('motion_data.csv')
+        motion_data = readCSV('motion_data.csv');
+    public:
     }

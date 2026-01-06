@@ -25,6 +25,4 @@ private:
     std::vector<std::vector<std::string>> motion_data;
 
 public:
-    int[] get_imu_vectors(int i);
-    int[] get_motion_vectors(int i);
 }
