@@ -1,26 +1,12 @@
-#include <filter.h>
-#include <data.h>
+"""Reminder to self to visualize in notebook 'imports' to prevent circular calling"""
+
+#include <eskf/filter/filter.h>
+#include <eskf/data/data.h>
+#include <eskf/utils/sensor_data.h>
+#include <eskf/utils/motion_data.h>
 #include <Eigen/Dense>
 #include <vector>
+#include <string>
 
-class Data {
-    private:
-        TimeCol = 0;
-        AccXCol = 1;
-        AccYCol = 2;
-        AccZCol = 3;
-        GyroXCol = 4;
-        GyroYCol = 5;
-        GyroZCol = 6;
-    
-        PosXCol = 0;
-        PosYCol = 1;
-        PosZCol = 2;
-        VelXCol = 3;
-        VelYCol = 4;
-        VelZCol = 5;
-    
-        sensor_data = readCSV('sensor_data.csv');
-        motion_data = readCSV('motion_data.csv');
-    public:
-    }
+
+

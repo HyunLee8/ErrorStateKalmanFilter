@@ -4,6 +4,21 @@
 #include <vector>
 #include <string>
 
-std::vector<std::vector<std::string>> readCSV(const std::string& fileName);
+class Data {
+private:
+    int TimeCol;
+    int AccXCol, AccYCol, AccZCol;
+    int GyroXCol, GyroYCol, GyroZCol;
+
+    int PosXCol, PosYCol, PosZCol;
+    int VelXCol, VelYCol, VelZCol;
+
+    std::vector<std::vector<std::string>> sensor_data;
+    std::vector<std::vector<std::string>> motion_data;
+
+    std::vector<std::vector<std::string>> readCSV(const std::strings &fileName);
+public:
+    Data();
+}
 
 #endif

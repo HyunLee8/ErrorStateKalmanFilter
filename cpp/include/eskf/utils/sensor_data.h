@@ -7,7 +7,7 @@
 
 class SensorData {
 private:
-    std::vector<std::vector<std::string>> sensorData;
+    std::vector<std::vector<std::double>> sensorData;
     int Time;
     int AccX, AccY, AccZ;
     int GyroX, GyroY, GyroZ;
@@ -17,7 +17,7 @@ public:
     
     void getSensorVectors(int i, double& Time, Eigen::Vector3d& Acc, Eigen::Vector3d& Gyro);
 
-    void loadData(const std::vector<std::vector<std::string>>& data);
+    void loadData(const std::vector<std::vector<std::double>>& data);
 }
 
 #endif
