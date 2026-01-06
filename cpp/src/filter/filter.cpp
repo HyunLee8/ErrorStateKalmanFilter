@@ -1,10 +1,8 @@
 """Reminder to self to visualize in notebook 'imports' to prevent circular calling"""
 
-#include <eskf/filter/filter.h>
 #include <eskf/data/data.h>
-#include <eskf/utils/sensor_data.h>
-#include <eskf/utils/motion_data.h>
 #include <Eigen/Dense>
+#include <Eigen/Geomentry>
 #include <vector>
 #include <string>
 #include <iostream>
@@ -15,14 +13,15 @@ ESKF::ESKF(Data& data) {
     sig_w_noise = 0.1;
     sig_w_walk = 0.1;
 
-    dataObject = data;
     gravity = 9.81;
     iterration = 0;
+    dataObject = data(iterration);
 
-    X.setZero();
-    X(3) = 1;
+    X.setZero();                            //initialize States
+    X(3) = 1;                               //Scalar value is set to 1
 
-    delta_X.setZero();
+    delta_X.setZero();                      //initialize Error States
+
     P = EigenMatrix<double, 15, 15>::Identity();
 
     Qi<< sig_a_noise*sig_a_noise, sig_a_noise*sig_a_noise, sig_a_noise*sig_a_noise,
@@ -32,14 +31,64 @@ ESKF::ESKF(Data& data) {
 
     Eigen::Matrix<double, 12, 12> Qi = diagVec.asDiagonal();
     Gravity << 0, 0, gravity;
+
+    dt = dataObject.getdt();
+    Gyro = dataObject.getGyro();
+    Acc = dataObject.getAcc();
+    Pos = dataObject.getPos();
+    Vel = dataObject.getVel();
+
+    Measurement.col(0) = Pos;
+    Measurement.col(1) = Vel;
+
+    U.col(0) = Acc;
+    U.col(1) = Gyro;
+}
+
+Eigen::Matrix<double, 3, 3> ESKF::skewSymmetric(Eigen::Matrix<double, 3, 1>& v) {
+    double vx = v(0);
+    double vy = v(1);
+    double vz = v(2);
+
+    Eigen::Matrix<double, 3, 3> mat;
+    mat <<  0,   -vz,   vy,
+            vz,   0,   -vx,
+           -vy,  vx,    0;
+    return mat;
+}
+
+Eigen::Matrix<double, 4, 3> ESKF::skewSymmestric(Eigen::Matrix<double, 4, 1>& v) {
+    double qw = v(0);
+    double qx = v(1);
+    double qy = v(2);
+    double qz = v(3);
+
+    EigenMatrix<double, 4, 3> mat;
+    mat << -qx,  -qy,  -qz,
+            qw,  -qz,   qy,
+            qz,   qw,  -qx,
+           -qy,   qx,   qw; 
+    return mat;
+}
+
+Eigen::Matrix<double, 3, 3> ESKF::quaternionRotation(Eigen::Matrix<double, 4, 1>& v) {
+
+}
+
+void ESKF::predict() {
+    Eigen::Vector3d p(X[0], X[1], X[2]);
+    Eigen::Quaterniond q(X[3], X[4], X[5], X[6]); // w, x, y, z
+    Eigen::Vector3d v(X[7], X[8], X[9]);
+    Eigen::Vector3d ab(X[10], X[11], X[12]);
+    Eigen::Vector3d wb(X[13], X[14], X[15]);
+
 }
 
 
 
 
 
-
-
+"""
 class ESKF {
     private:
         //Adjust the parameters
@@ -85,4 +134,4 @@ class ESKF {
     
         void update(Eigen::Matrix& RMeasurement)
     }
-
+"""

@@ -21,7 +21,9 @@ private:
 public:
     MotionData(const std::vector<std::vector<double>>& data);
 
-    void getMotionData(int i, Eigen::Vector& Pos, Eigen::Vector& Vel);
+    void getMotionData(int i);
 
-    void loadData(const std::vector<std::vector<double>>& data);
+    Eigen::Matrix<double, 3, 1> getPos;
+
+    Eigen::Matrix<double, 3, 1> getVel;
 }

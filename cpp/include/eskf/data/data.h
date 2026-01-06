@@ -3,36 +3,21 @@
 
 #include <vector>
 #include <string>
+#include "eskf/utils/sensor_data.h"
+#include "eskf/utils/motion_data.h"
 
 class Data {
 private:
-    int TimeCol;
-
-    auto sensorData;
-    auto motionData;
-
-    double Time;
-
-    double AccXCol, AccYCol, AccZCol;
-    double GyroXCol, GyroYCol, GyroZCol;
-
-    double PosXCol, PosYCol, PosZCol;
-    double VelXCol, VelYCol, VelZCol;
-
-    std::vector<std::vector<std::double>> sensor_data;
-    std::vector<std::vector<std::double>> motion_data;
-
-    std::vector<std::vector<std::double>> readCSV(const std::strings &fileName);
+    std::vector<std::vector<double>> sensor_data_csv;
+    std::vector<std::vector<double>> motion_data_csv;
+    std::vector<std::vector<double>> readCSV(const std::strings &fileName);
 public:
-    Data();
-
-    double getTime();
+    Data(int i);
+    double getdt();
     Eigen::Matrix<double, 3, 1> getAcc();
     Eigen::Matrix<double, 3, 1> getGyro();
     Eigen::Matrix<double, 3, 1> getPos();
     Eigen::Matrix<double, 3, 1> getVel();
-    std::vector<std::vector<std::double>> get_sensor_data();
-    std::vector<std::vector<std::double>> get_motion_data();
 }
 
 #endif

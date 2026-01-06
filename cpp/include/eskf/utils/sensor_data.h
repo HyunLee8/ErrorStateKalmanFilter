@@ -10,9 +10,9 @@ private:
     std::vector<std::vector<double>> sensorData;
     Eigen::Matrix<double, 3, 1> Acc;
     Eigen::Matrix<double, 3, 1> Gyro;
-    double Time;
+    double dt;
 
-    static constexpr int TIME_COL = 0;
+    static constexpr int DT_COL = 0;
     static constexpr int ACC_X_COL = 1;
     static constexpr int ACC_Y_COL = 2;
     static constexpr int ACC_Z_COL = 3;
@@ -23,7 +23,9 @@ private:
 public:
     SensorData(const std::vector<std::vector<std::double>>& data);
 
-    double getTime();
+    void getSensorData(int i);
+
+    double getdt();
 
     Eigen::Matrix<double, 3, 1> getAcc();
 

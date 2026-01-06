@@ -4,7 +4,7 @@ SensorData::SensorData(const std::vector<std::vector<double>>& data)
     : sensorData(data){}
 
 void SensorData::getSensorData(int i) {
-    Time = sensorData[i][TIME_COL];
+    dt = sensorData[i+1][DT_COL] - sensorData[i][DT_COL];
 
     Acc << sensorData[i][ACC_X_COL],
            sensorData[i][ACC_Y_COL],
@@ -15,14 +15,14 @@ void SensorData::getSensorData(int i) {
             sensorData[i][GYRO_Z_COL]; 
 }
 
-SensorData::double getTime() {
-    return Time;
+double SensorData::getdt() {
+    return dt;
 }
 
-SensorData::Eigen::Matrix getAcc() {
+Eigen::Matrix<double, 3, 1> SensorData::getAcc() {
     return Acc;
 }
 
-SensorData::Eigen::Matrix getGyro() {
+Eigen::Matrix<double, 3, 1> SensorData::getGyro() {
     return Gryo;
 }

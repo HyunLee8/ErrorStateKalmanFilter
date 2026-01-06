@@ -9,25 +9,21 @@
 #define FILTER_HPP
 
 #include "eskf/data/data.h"
-#include "eskf/utils/sensr_data.h"
-#include "eskf/utils/motion_data.h"
 #include <vector>
 #include <string>
 #include <Eigen/Dense>
 
 class ESKF {
 private:
-    //Adjust the parameters
     double sig_a_noise;
     double sig_a_walk;
     double sig_w_noise;
     double sig_w_walk;
 
+    int iterration;
     auto dataObject
-
     double gravity;
 
-    int iterration;
     Eigen::Matrix<double, 16, 1> X;
     Eigen::Matrix<double, 15, 1> delta_X;
     Eigen::Matrix<double, 15, 15> P;
@@ -38,18 +34,18 @@ private:
     Eigen::Matrix<double, 3, 1> Acc;
     Eigen::Matrix<double, 3, 1> Pos;
     Eigen::Matrix<double, 3, 1> vel;
-    double Time;
+    double dt;
 
-    Eigen::Matrix<Eigen::Matrix, 2, 1> Measurement;
-    Eigen::Matrix<Eigen::Matrixm 2, 1> U;
+    Eigen::Matrix<Eigen::Matrix, 3, 2> Measurement;
+    Eigen::Matrix<Eigen::Matrixm 3, 2> U;
     Eigen::Matrix<double, 3, 3> R;
 
 public:
     ESKF(Data& data);
 
-    void skewSymmetric(Eigen::Matrix& v);
+    void skewSymmetric(Eigen::Matrix<double, 3, 3>& v);
 
-    void quaternionSkewSymmetric(Eigen::& q);
+    void quaternionSkewSymmetric(Eigen::Matrix<double, 4, 3>& q);
 
     void qRot(Eigen::Vector& theta);
 

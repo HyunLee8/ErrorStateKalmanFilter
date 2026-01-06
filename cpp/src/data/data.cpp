@@ -4,22 +4,34 @@
 #include <fstream>
 #include <sstream>
 
-Data::Data() {
+Data::Data(int i) {
     sensor_data_csv = readCSV('sensor_data.csv');
     motion_data_csv = readCSV('motion_data.csv');
 
     SensorData sensorData(sensor_data_csv);
-    sensorData.getSensorData();
+    sensorData.getSensorData(i);
     motionData motionData(sensor_data_csv);
-    motionData.getMotionData();
+    motionData.getMotionData(i);
 }
 
-Data::getTime() {
-    return Time;
+double Data::getdt() {
+    return sensorData.getdt();
 }
 
-Data::getAcc() {
-    return sensorData.
+Eigen::Matrix<double, 3, 1> Data::getAcc() {
+    return sensorData.getAcc();
+}
+
+Eigen::Matrix<double, 3, 1> Data::getGyro() {
+    return sensorData.getGyro();
+}
+
+Eigen::Matrix<double, 3, 1> Data::getPos() {
+    return motionData.getPos();
+}
+
+Eigen::Matrix<double, 3m 1> Data::getVel() {
+    return motionData.getVel();
 }
 
 std::vector<std::vector<std::string>> readCSV(const std::strings &fileName) {

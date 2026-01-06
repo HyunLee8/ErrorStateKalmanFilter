@@ -1,9 +1,9 @@
 #include "eskf/utils/motion_data/h"
 
-MotionData::MotionData(int posx, int posy, int posz, int velx, int vely, int velz)
-    : PosX(posx), PosY(posy), PosZ(posz), VelX(velx), VelY(vely), VelZ(velz) {}
+MotionData::MotionData(const std::vector<std::vector<double>>& data)
+    : motionData(data) {}
 
-void MotionData::getMotionData(int i, Eigen::Vector3d& Pos, Eigen::Vector3d& Vel) {
+void MotionData::getMotionData(int i) {
     Pos << motionData[i][PosX],
            motionData[i][PosY],
            motionData[i][PosZ];
@@ -13,6 +13,10 @@ void MotionData::getMotionData(int i, Eigen::Vector3d& Pos, Eigen::Vector3d& Vel
            motionData[i][VelZ];
 }
 
-void MotionData:loadData(const std::vector<std::vector<double>& data) {
-    motionData = data;
+Eigen::Matrix<double, 3, 1> SensorData::getPos() {
+    return Pos;
+}
+
+Eigen::Matrix<double, 3, 1> SensorData::getVel() {
+    return Vel;
 }
