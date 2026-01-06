@@ -13,12 +13,51 @@
 #include "eskf/utils/motion_data.h"
 #include <vector>
 #include <string>
+#include <Eigen/Dense>
 
 class ESKF {
 private:
+    //Adjust the parameters
+    double sig_a_noise;
+    double sig_a_walk;
+    double sig_w_noise;
+    double sig_w_walk;
+
+    auto dataObject
+
+    double gravity;
+
     int iterration;
-    auto dataObj;           // this is the Data object we will pass in data/data.cpp
+    Eigen::Matrix<double, 16, 1> X;
+    Eigen::Matrix<double, 15, 1> delta_X;
+    Eigen::Matrix<double, 15, 15> P;
+    Eigen::Matrix<double, 12, 1> Qi;
+    Eigen::Matrix<double, 3, 1> Gravity;
+
+    Eigen::Matrix<double, 3, 1> Gyro
+    Eigen::Matrix<double, 3, 1> Acc;
+    Eigen::Matrix<double, 3, 1> Pos;
+    Eigen::Matrix<double, 3, 1> vel;
+    double Time;
+
+    Eigen::Matrix<Eigen::Matrix, 2, 1> Measurement;
+    Eigen::Matrix<Eigen::Matrixm 2, 1> U;
+    Eigen::Matrix<double, 3, 3> R;
 
 public:
-    ESKF('FINISH STUFF IN HERE');
+    ESKF(Data& data);
+
+    void skewSymmetric(Eigen::Matrix& v);
+
+    void quaternionSkewSymmetric(Eigen::& q);
+
+    void qRot(Eigen::Vector& theta);
+
+    void computeNoiseJacobian(int& dt, Eigen::Matrix& R);
+
+    void computeErrorStateJacobian(int& dt, Eigen::Matrix& a, EigenMatrix& w, EigenMatrix& R);
+
+    void predict();
+
+    void update(Eigen::Matrix& RMeasurement)
 }

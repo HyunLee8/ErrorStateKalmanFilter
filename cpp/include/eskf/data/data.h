@@ -7,18 +7,32 @@
 class Data {
 private:
     int TimeCol;
-    int AccXCol, AccYCol, AccZCol;
-    int GyroXCol, GyroYCol, GyroZCol;
 
-    int PosXCol, PosYCol, PosZCol;
-    int VelXCol, VelYCol, VelZCol;
+    auto sensorData;
+    auto motionData;
 
-    std::vector<std::vector<std::string>> sensor_data;
-    std::vector<std::vector<std::string>> motion_data;
+    double Time;
 
-    std::vector<std::vector<std::string>> readCSV(const std::strings &fileName);
+    double AccXCol, AccYCol, AccZCol;
+    double GyroXCol, GyroYCol, GyroZCol;
+
+    double PosXCol, PosYCol, PosZCol;
+    double VelXCol, VelYCol, VelZCol;
+
+    std::vector<std::vector<std::double>> sensor_data;
+    std::vector<std::vector<std::double>> motion_data;
+
+    std::vector<std::vector<std::double>> readCSV(const std::strings &fileName);
 public:
     Data();
+
+    double getTime();
+    double getAcc();
+    double getGyro();
+    double getPos();
+    double getVel();
+    std::vector<std::vector<std::double>> get_sensor_data();
+    std::vector<std::vector<std::double>> get_motion_data();
 }
 
 #endif
