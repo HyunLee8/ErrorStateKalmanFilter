@@ -71,8 +71,22 @@ Eigen::Matrix<double, 4, 3> ESKF::skewSymmestric(Eigen::Matrix<double, 4, 1>& v)
     return mat;
 }
 
-Eigen::Matrix<double, 3, 3> ESKF::quaternionRotation(Eigen::Matrix<double, 4, 1>& v) {
+Eigen::Matrix<double, 3, 3> ESKF::quaternionRotation(Eigen::Matrix<double, 4, 1>& three_dim_theta) {
+    Eigen::Vector3d theta = three_dim_theta.tail<3>();
+    double angle = theta.norm();
+    if(angle > 0) {
+        Eigen::Vector3d axis = theta / angle;
+        Eigen::Quaterniond q(Eigen::AngleAxisd(angle, axis));
+        return q.toRotationMatrix();
+    }
+    else {
+        return Eigen::Matrix3d::Identity();
+    }
+}
 
+Eigen::Matrix<double, 15, 12> ESKF::computeNoiseJacobian(double dt, EigenMatrix<double, 3, 3>& R) {
+    Eigen::Matrix<double, 15, 12> Fi;
+    //Don't set zero just use Fi << blah blah blah
 }
 
 void ESKF::predict() {
@@ -82,6 +96,33 @@ void ESKF::predict() {
     Eigen::Vector3d ab(X[10], X[11], X[12]);
     Eigen::Vector3d wb(X[13], X[14], X[15]);
 
+    Eigen::Vector3d am(U[0], U[1], U[2]);
+    Eigen::Vector3d wm(U[3], U[4], U[5]);
+
+    Eigen::Matrix3d R = q.toRotationMatrix();
+    this->R = R;
+
+    Eigen::Vector3d accUnbiased = am - ab;
+    Eigen::Vector3d gyroUnbiased = wm - wb;
+
+    Eigen::Vector3d accGlobal = this->R * accUnbiased - Gravity;
+    Eigen::Vector3d pNext = this->p + this->v(this->dt) + 0.5*accGlobal*(this->dt*this->dt);
+    Eigen::Vector3d vNext = this->v + accGloval * this->dt;
+
+    Eigen::Vector3d theta = gyroUnbiased * this->dt;
+    Eigen::Vector4d delta_q = quaternionRotation(theta);
+    Eigen::Vector4d qNext = (q*delta_q).normalised;
+
+    X[0] = pNext[0];
+    X[1] = pNext[1];
+    X[2] = pNext[2];
+    X[3] = qNext[0];
+    X[4] = qNext[1];
+    X[5] = qNext[2];
+    X[6] = qNext[3];
+    X[7] = vNext[0];
+    X[8] = vNext[1];
+    X[9] = vNext[2];
 }
 
 

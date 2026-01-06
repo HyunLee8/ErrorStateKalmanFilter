@@ -49,7 +49,7 @@ public:
 
     void qRot(Eigen::Vector& theta);
 
-    void computeNoiseJacobian(int& dt, Eigen::Matrix& R);
+    void computeNoiseJacobian(double& dt, Eigen::Matrix<double, 3, 3>& R);
 
     void computeErrorStateJacobian(int& dt, Eigen::Matrix& a, EigenMatrix& w, EigenMatrix& R);
 
