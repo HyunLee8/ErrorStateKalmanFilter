@@ -128,7 +128,7 @@ Eigen::Matrix<double, 4, 3> ESKF::skewSymmestric(Eigen::Matrix<double, 4, 1>& v)
     return mat;
 }
 
-Eigen::Matrix<double, 3, 3> ESKF::quaternionRotation(Eigen::Matrix<double, 4, 1>& three_dim_theta) {
+void ESKF::quaternionRotation(Eigen::Matrix<double, 4, 1>& three_dim_theta) {
     Eigen::Vector3d theta = three_dim_theta.tail<3>();
     double angle = theta.norm();
     if(angle > 0) {
@@ -141,9 +141,26 @@ Eigen::Matrix<double, 3, 3> ESKF::quaternionRotation(Eigen::Matrix<double, 4, 1>
     }
 }
 
-Eigen::Matrix<double, 15, 12> ESKF::computeNoiseJacobian(double dt, EigenMatrix<double, 3, 3>& R) {
+Eigen::Matrix<double, 15, 15> ESKF::computeErrorStateJacobian(double& dt, Eigen::Vector3d& a, Eigen::Vector3d& w, Eigen::Matrix3d& R) {
+    Eigen::Matrix<double, 15, 15> Fx = Eigen::Matrix<double, 15, 15>::Identity();
+    Fx.block<3, 3>(0, 6) = Eigen::Matrix3d::Identity() * dt;
+    Fx.block<3, 3>(3, 3) = Eigen::Matrix3d::Identity() - skewSymmetric(w) * dt;
+    Fx.block<3, 3>(3, 12) = -Eigen::Matrix3d::Identity() * dt;
+    Fx.block<3, 3>(6, 3) = -R * skewSymmetric(a) * dt;
+    Fx.block<3, 3>(6, 9) = -R * dt;
+
+    return Fx;
+}
+
+Eigen::Matrix<double, 15, 15> ESKF::computeNoiseJacobian(double dt, const EigenMatrix3d& R) {
     Eigen::Matrix<double, 15, 12> Fi;
-    //Don't set zero just use Fi << blah blah blah
+    Fi.setZero();
+    Fi.block<3, 3>(6, 0) = -R * dt;
+    Fi.block<3, 3>(3, 3) = -Eigen::Matrix3d::Identity() * dt;
+    Fi.block<3, 3>(9, 6) = Eigen::Matrix3d::Identity() * dt;
+    Fi.block<3, 3>(12, 9) = Eigen::Matrix3d::Identity() * dt;
+
+    return Fi;
 }
 
 void ESKF::predict() {
@@ -180,6 +197,14 @@ void ESKF::predict() {
     X[7] = vNext[0];
     X[8] = vNext[1];
     X[9] = vNext[2];
+
+    Fx = computeErrorStateJacobian(dt, accUnbiased, gyroUnbiased, this->R);
+    Fi = computeNoiseJacobian(dt, this->R);
+
+    P = Fx * P * Fx.transpose() + Fi * Qi * Fi.transpose();
+
+    delta_q.setZero();
+    iterration++;
 }
 
 
