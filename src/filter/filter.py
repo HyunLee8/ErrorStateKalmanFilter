@@ -247,7 +247,7 @@ class ESKF:
         p = self.X[0:3]
         v = self.X[7:10]
         
-        if R_measurement is None:   # claude reccomended this in case some files don't have external measurement data
+        if R_measurement is None:   # claude reccomended this in case some files don't have external measurement R
             R_measurement = np.eye(meas_size) * 0.1
 
         if meas_size == 3:  

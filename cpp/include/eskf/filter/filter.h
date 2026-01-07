@@ -37,8 +37,11 @@ private:
     double dt;
 
     Eigen::Matrix<Eigen::Matrix, 3, 2> Measurement;
+    Eigen::MatrixXd RMeasurement;
     Eigen::Matrix<Eigen::Matrixm 3, 2> U;
     Eigen::Matrix<double, 3, 3> R;
+
+    Eigen::VectorXd y;
 
 public:
     ESKF(Data& data);
