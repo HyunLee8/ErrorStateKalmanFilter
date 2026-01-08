@@ -74,7 +74,8 @@ python main.py
 - **`sig_a_walk`**: Accelerometer bias instability (how fast bias drifts)
 - **`sig_w_walk`**: Gyroscope bias instability (how fast bias drifts)
 - **`gravity`**: Local gravitational acceleration (typically 9.81 m/s²)
-~~One important caveat for gravity is that typically in most papers you will see that
+
+**One important caveat for gravity is that typically in most papers you will see that
   gravity is included in the error states however when computing it almost never affects 
   the kalman gain or any other values when applied. Also it only adds unecessary complexity
   thus is not inluded in delta X.
