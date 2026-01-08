@@ -60,3 +60,5 @@ public:
 
     void update(Eigen::Matrix& RMeasurement)
 }
+
+#endif

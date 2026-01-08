@@ -291,6 +291,5 @@ void update() {
     X[15] += delta_wb[2];
     delta_X.setZero();
 
-
-
+"""FIRST DRAFT COMPLETE LETS GO"""
 }
