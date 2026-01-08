@@ -19,7 +19,7 @@ ESKF::ESKF(Data& data) {
     X.setZero();                            //initialize States
     X(3) = 1;                               //Scalar value is set to 1
 
-    delta_X.setZero();                      //initialize Error States
+    delta_X.setZero();                      //initialize Error States (this is LOWER CASE DELTA. Not change in Time))
 
     P = EigenMatrix<double, 15, 15>::Identity();
 
@@ -231,12 +231,66 @@ void update() {
         H = Eigen::MatrixXd::Zero(3, 15);
         H.block<3, 3>(0, 0) = Eigne::Matrix3d::Identity();
         y = Eigen::MatrixXd(3, 1);
-        y = Measurement - p; // IMPORNTANT: May need to reshape. I will see during compile;
+        Eigen::Map<Eigen::Matrix<double, 3, 1>
+        y = Measurement - p; // IMPORNTANT: I don't think i have to reshape here but I will see during compile
 
-    } else {
+    } else if(measuredSize == 6) {
         H = Eigen::MatrixXd::Zero(6, 15);
         H.block<3, 3>(0, 0) = Eigne::Matrix3d::Identity();
         H.block<3, 3>(3, 6) = Eigne::Matrix3d::Identity();
-
+        Eigen::Matrix<double, 6, 1> predicted; // IMPORNTANT: same issue as line 235
+        predicted << p,
+                     v;
+        y = Measurement - predicted; //FIX THIS LATER.
+    } else {
+        std::cout << "Measured Size is not applicable" << '\n';
+        break;
     }
+
+    Eigen::Matrix<double, measuredSize, measuredSize> S = H * P * H.transpose() + RMeasurement;
+    Eigen::Matrix<double, 15, measuredSize> K = P * H.transpose() * S.ldlt().solve(Eigen::Matrix3d::Identity());
+
+    delta_X = (K * y);
+
+    Eigen::Matrix<double, 15, 15> I_KH = Eigen::Matrix<double, 15, 15>::Identity() - K * H;
+    P = I_KH * P * I_KH.transpose() + K * RMeasurement * K.transpose();
+
+    Eigen::Vector3d delta_p(delta_X[0], delta_X[1], delta_X[2]);
+    Eigen::Vector3d delta_theta(delta_X[3], delta_X[4], delta_X[5]);
+    Eigen::Vector3d delta_v(delta_X[6], delta_X[7], delta_X[8]);
+    Eigen::Vector3d delta_ab(delta_X[9], delta_X[10], delta_X[11]);
+    Eigen::Vector3d delta_wb(delta_X[12], delta_X[13], delta_X[14]);
+
+    Eigen::Quaterniond nominalQ(X[0], X[1], X[2], X[3]);
+    double angle = delta_theta.norm();
+
+    if angle < 1e-8 {
+        delta_q = Eigen::Quaterniond(1, 0.5*delta_theta[0], 0.5*delta_theta[1], 0.5*delta_theta[2]);
+    } else {
+        Eigen::Vector3d axis = delta_theta / angle;
+        delta_q = Eigen::Quaterniond(Eigen::AngleAxisd(angle, axis));
+    }
+
+    Eigen::Quaterniond updatedQ = (delta_q * nominalQ).normalized();
+
+    X[0] += delta_p[0];
+    X[1] += delta_p[1];
+    X[2] += delta_p[2];
+    X[3] = updatedQ.w();
+    X[4] = updatedQ.x();
+    X[5] = updatedQ.y();
+    X[6] = updatedQ.z();
+    X[7] += delta_v[0];
+    X[8] += delta_v[1];
+    X[9] += delta_v[2];
+    X[10] += delta_ab[0];
+    X[11] += delta_ab[1];
+    X[12] += delta_ab[2];
+    X[13] += delta_wb[0];
+    X[14] += delta_wb[1];
+    X[15] += delta_wb[2];
+    delta_X.setZero();
+
+
+
 }
