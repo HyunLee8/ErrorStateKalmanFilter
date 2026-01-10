@@ -1,5 +1,8 @@
-//from filter import ESKF, Data
-//import pandas as pd
+//entry point for running the filter
+
+#include "eskf/utils/RunFilter.h"
+#include "eskf/utils/Data.h"
+#include "eskf/filter/filter.h"
 
 void RunFilter() {
     const data = Data();
@@ -9,3 +12,4 @@ void RunFilter() {
         TrueFilter.update();
     }
 }
+

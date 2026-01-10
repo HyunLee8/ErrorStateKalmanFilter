@@ -1,4 +1,29 @@
-"""Reminder to self to visualize in notebook 'imports' to prevent circular calling"""
+"""
+    Author: Isaac Lee
+    Date: Jun 10, 2025
+    Description:
+    
+        Bulk of the ESKF Logic will be stored in this file including the 
+        prediction and update steps. Minor differences between the python 
+        implementation and C++ implementation exist. I'll try to list them
+        in order here:
+
+        1. Eigen library is used in all matrix operations which also includes 
+           quaternion operations. Contrary to python where you have to take 
+           array and turn it into a quaternion object, Eigen has built in
+           quaternion support and thus makes it easier to work with.
+
+        2. Reshaping matrices is a common occurance in python with numpy 
+           because it assumes that your vector is a 1D array. In C++ when you
+           call a Eigen::Vector type it is already a 3d vector so no need to 
+           reshape it.
+
+
+        Any other differences either be syntax related or minor changes in logic that
+        is not worth mentioning here and instead will be commented in the code itself.
+"""
+
+
 #include <eskf/data/data.h>
 #include <Eigen/Dense>
 #include <Eigen/Geomentry>
@@ -54,6 +79,7 @@ Eigen::Matrix<double, 3, 3> ESKF::skewSymmetric(Eigen::Matrix<double, 3, 1>& v) 
     mat <<  0,   -vz,   vy,
             vz,   0,   -vx,
            -vy,  vx,    0;
+
     return mat;
 }
 
@@ -76,7 +102,7 @@ void ESKF::quaternionRotation(Eigen::Matrix<double, 4, 1>& three_dim_theta) {
     double angle = theta.norm();
     if(angle > 0) {
         Eigen::Vector3d axis = theta / angle;
-        Eigen::Quaterniond q(Eigen::AngleAxisd(angle, axis));
+        Eigen::Quaterniond q(Eigen::AngleAxisd(angle, axis));       //Eigen has built in AngleAxisd to Quaternion conversion
         return q.toRotationMatrix();
     }
     else {
@@ -291,5 +317,5 @@ void update() {
     X[15] += delta_wb[2];
     delta_X.setZero();
 
-"""FIRST DRAFT COMPLETE LETS GO"""
+"""FIRST DRAFT COMPLETE""
 }
