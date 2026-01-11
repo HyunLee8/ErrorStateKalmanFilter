@@ -1,4 +1,6 @@
 """
+***Important ~~ Intuitive Explanations in lines 145 and 221.
+
     Author: Isaac Lee
     Date: Jun 10, 2025
     Description:
@@ -11,18 +13,30 @@
         1. Eigen library is used in all matrix operations which also includes 
            quaternion operations. Contrary to python where you have to take 
            array and turn it into a quaternion object, Eigen has built in
-           quaternion support and thus makes it easier to work with.
+           quaternion class making it easier to work with.
 
-        2. Reshaping matrices is a common occurance in python with numpy 
-           because it assumes that your vector is a 1D array. In C++ when you
+        2. Reshaping number sets is a common occurance in python with numpy 
+           because it sets all vectors no matter the size as 1D. In C++ when you
            call a Eigen::Vector type it is already a 3d vector so no need to 
            reshape it.
 
+        3, I made a seperate file for the data class for cleaner code and
+           reuseability because motion data object as well as sensor data 
+           object need to be called from data class.
 
         Any other differences either be syntax related or minor changes in logic that
         is not worth mentioning here and instead will be commented in the code itself.
-"""
 
+    Improvement for future builds:
+
+        I was sort of brain dead in the beginning stages when I was implementing this 
+        in c++ and I sort of just read over python filter.py file and just 
+        type the code but in c++ syntax instead of implementing with efficient 
+        libraries. There are definetly a lot of points of simpification I could've used
+        however most of this is good and does NOT need further simplification like 
+        how quaternionRotation was implemented. The actual c++ library for this is less
+        efficient than hard coding.
+"""
 
 #include <eskf/data/data.h>
 #include <Eigen/Dense>
@@ -233,6 +247,15 @@ void update() {
             Now just multiply the error quaternions to the current quaternions and then just normlise it so
             all values add to 1. Now just run it with each row in a data set and boom you now have a fully
             function Error State Kalman Filter
+
+    Error States
+
+        δX: [δp, δθ, δv, δab, δwb] state vector
+        ** Reminder that in error states, size is 
+           15 because you use euler errors not 
+           quaternion errors. Because you use
+           gyro values to calculate the 
+           errors you get euler.
 """
     Eigen::Vector3d p(X[0], X[1], X[2]);
     Eigen::Quaterniond q(X[3], X[4], X[5], X[6]); // w, x, y, z
@@ -317,5 +340,5 @@ void update() {
     X[15] += delta_wb[2];
     delta_X.setZero();
 
-"""FIRST DRAFT COMPLETE""
+    // Make csv loading logic here soon
 }

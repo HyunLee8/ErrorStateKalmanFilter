@@ -1,3 +1,19 @@
+"""
+Author: Isaac Lee
+Date: Jan 10, 2026
+Description:
+    For preprocessing data, I have a local
+    readCSV method implemented manually. C++
+    does not have a built in read csv like
+    python pandas. To prevent jumbled code,
+    I implemented two seperate classes for 
+    parsing sensor data and motion data. 
+    From there you can call the objects' 
+    values and return. Data takes a requred
+    arg 'i' in order to iterrate through
+    the data frame.
+"""
+
 #include "eskf/data/data.h"
 #include "eskf/utils/motion_data.h"
 #include "eskf/utils/sensor_data.h"

@@ -1,6 +1,6 @@
 # Error-State Kalman Filter (ESKF) with Quaternion-Based Orientation (Final Implementatino Under work)
 
-Everything here has been updated from the previous garbage code that I had for several months and never updated. So here is the final python implementation. Currently adopting to cpp in Final_implementation folder. Enjoy the work done so far.
+Everything here has been updated from the previous garbage code that I had for several months and never updated. Bulk of this ReadMe will be a brief summary of setting up the program and a little conceptual understanding of the ESKF. For following me on the thought process of the program archietecture and a deeper conceptual undestanding of the ESKF, it will be at the top and all around of each .cpp file in /Final_Implementation. Currently the .cpp files are being refurbished but if you wanna see the fully functional python implementation you can check /Draft_Implementation. Enjoy the work done so far.
 
 ## Data
 
