@@ -1,4 +1,4 @@
-"""
+/*
 Author: Isaac Lee
 Date: Jan 10, 2026
 Index:
@@ -14,9 +14,9 @@ Index:
     /utils      - support functions for fetching sensor and motion data as well
                   as running the filter after main entry point
 
-"""
+*/
 
-#include "eskf/utils/RunFilter.hpp"
+#include "eskf/utils/RunFilter.h"
 #include <iostream>
 
 int main() {
